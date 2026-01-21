@@ -1,0 +1,11 @@
+# Ignore log files
+activity_log.txt
+*.log
+
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+
+# Ignore sensitive info or local settings
+.env
+.vscode/
