@@ -9,3 +9,11 @@ __pycache__/
 # Ignore sensitive info or local settings
 .env
 .vscode/
+
+# Ignore spec
+__pycache__/
+*.spec
+
+# Ignore build folder process
+build/
+dist/
