@@ -1,6 +1,7 @@
 import psutil, os, time, subprocess
 from functools import partial
-from .utils import task_report
+
+from .utils import Task_Report
 
 class Task:
     def __init__(self, name, func, data, interval, delay):
@@ -27,7 +28,7 @@ class Task:
         self.is_first_run = False
 
     @staticmethod
-    @task_report("Check Requirements", is_critical=True)
+    @Task_Report("Check Requirements", is_critical=True)
     def check_req(file_path: str):
         # 1. Check if file exists
         if not os.path.exists(file_path):
@@ -54,7 +55,7 @@ class Task:
         return "Success: File meets all requirements."
     
     @staticmethod
-    @task_report("Check Running Programs")
+    @Task_Report("Check Running Programs")
     def is_program_running(program_list):
         """
         Checks if any program from a given list is currently running.
@@ -73,38 +74,27 @@ class Task:
         return running_processes
     
     @staticmethod
-    @task_report("Programs Stopper")
+    @Task_Report("Programs Stopper")
     def kill_program(program_name: str) -> str:
         """
         Terminated a specific program and returns a status message.
         """
-        if os.name == 'nt':  # Windows Logic
             # Using subprocess to capture 'taskkill' output
-            process = subprocess.run(
-                ['taskkill', '/f', '/im', program_name],
-                capture_output=True,
-                text=True
-            )
-            
-            if process.returncode == 0:
-                return f"SUCCESS: '{program_name}' terminated."
-            else:
-                # Captures "ERROR: The process ... not found."
-                error_msg = process.stderr.strip() or process.stdout.strip()
-                return f"FAILED: '{program_name}' -> {error_msg}"
-
-        else:  # Linux/Mac Logic (keeping psutil but returning string)
-            try:
-                for proc in psutil.process_iter(['name']):
-                    if proc.info['name'] == program_name:
-                        proc.terminate()
-                        return f"SUCCESS: '{program_name}' terminated via psutil."
-                return f"INFO: '{program_name}' was not running."
-            except Exception as e:
-                return f"ERROR: Could not kill '{program_name}': {e}"
+        process = subprocess.run(
+            ['taskkill', '/f', '/im', program_name],
+            capture_output=True,
+            text=True
+        )
+        
+        if process.returncode == 0:
+            return f"SUCCESS: '{program_name}' terminated."
+        else:
+            # Captures "ERROR: The process ... not found."
+            error_msg = process.stderr.strip() or process.stdout.strip()
+            return f"FAILED: '{program_name}' -> {error_msg}"
 
     @staticmethod
-    @task_report("SVCs Stopper")
+    @Task_Report("SVCs Stopper")
     def kill_svc_program(svc_process_terminate: list):
         results = []
         for svc in svc_process_terminate:
@@ -114,7 +104,7 @@ class Task:
         return results
 
     @staticmethod
-    @task_report("EXE Stopper")
+    @Task_Report("EXE Stopper")
     def kill_exe_program(program_terminate: list):
         active_processes = Task.is_program_running(program_terminate)
         
@@ -128,7 +118,7 @@ class Task:
         return results 
     
     @staticmethod
-    @task_report("Log Cleaner")
+    @Task_Report("Log Cleaner")
     def cleanup_logs(log_file_path: str):
         with open(log_file_path, 'w') as f:
             f.write(f"--- Log Wiped at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")

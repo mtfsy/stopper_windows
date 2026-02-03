@@ -1,6 +1,8 @@
-from stopper_src.stopper import Task
-from stopper_src.utils import task_report
 import argparse, time, sys, os
+
+
+from stopper import *
+#from test_stopper.test_stopper import TestStopper
 
 
 BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
@@ -11,13 +13,9 @@ CONFIGS_PATH = os.path.join(BASE_DIR, "configs", CONFIGS_FILE)
 LOG_FILE = "activity_log.txt" 
 LOG_PATH = os.path.join(BASE_DIR, "logs", LOG_FILE)
 
-@task_report("Main")
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--interval-svc', type=int, default=180)
-    parser.add_argument('--interval-exe', type=int, default=180)
-    parser.add_argument('--delay', type=int, default=86400)
-    args = parser.parse_args()
+
+def stopper(args):
+    Task_Report("Start Date")(lambda: print(f"Scheduler started at {time.strftime('%H:%M:%S')}"))()
 
     # Initial check
     Task.check_req(CONFIGS_PATH)
@@ -36,8 +34,6 @@ def main():
         Task("Log Wiper", Task.cleanup_logs, LOG_PATH, args.delay, args.delay/2)
     ]
 
-    print(f"Scheduler started at {time.strftime('%H:%M:%S')}")
-    
     try:
         while True:
             now = time.time()
@@ -48,6 +44,9 @@ def main():
     except KeyboardInterrupt:
         print("Shutting down...")
 
+def test(args):
+
+    return print (f"this is your argument {args}")
 
 
 
@@ -66,4 +65,14 @@ def main():
 #c++ go make linux related like process ebpf etc
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--interval-svc', type=int, default=180)
+    parser.add_argument('--interval-exe', type=int, default=180)
+    parser.add_argument('--delay', type=int, default=86400)
+    parser.add_argument('--test', type=bool, default=False)
+    args = parser.parse_args()
+
+    if args.test: 
+        test(args)
+    else: 
+        stopper(args)

@@ -2,11 +2,11 @@ import time, sys, functools, io, os
 
 
 LOG_FILE = "activity_log.txt" 
-BASE_DIR  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR  = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LOG_PATH = os.path.join(BASE_DIR, "logs", LOG_FILE)
 
 
-def task_report(name: str,  log_path:str=LOG_PATH, is_critical:bool=False):
+def Task_Report(name: str,  log_path:str=LOG_PATH, is_critical:bool=False):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -29,7 +29,6 @@ def task_report(name: str,  log_path:str=LOG_PATH, is_critical:bool=False):
 
             output_text = capture_output.getvalue().strip()
             
-            # Build clean log block
             log_parts = [f"[{timestamp}] TASK: {name}"]
             if output_text: log_parts.append(output_text)
             if result: log_parts.append(f"Result: {result}")
@@ -40,8 +39,10 @@ def task_report(name: str,  log_path:str=LOG_PATH, is_critical:bool=False):
                 if not status_ok and is_critical:
                     f.write(f"CRITICAL FAILURE. EXITING.\n")
                     sys.exit(1)
+                
+
             
-            print(log_entry.strip())
+            #print(log_entry.strip())
             return result
         return wrapper
     return decorator
