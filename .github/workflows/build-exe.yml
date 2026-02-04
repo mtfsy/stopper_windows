@@ -48,13 +48,3 @@ jobs:
         with:
           name: Stopper-Full-Package
           path: Stopper_Bundle.zip
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: Stopper_Bundle.zip
-          name: Release ${{ github.ref_name }}
-          tag_name: latest
-          body: Automated release for version ${{ github.ref_name }}.
-          draft: false
-          prerelease: false
