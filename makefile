@@ -1,6 +1,6 @@
 # Variables
 NAME = "MyStopper"
-SCRIPT = "blaclisted_v1.py"
+SCRIPT = "stopper.py"
 
 # Default task: Build the EXE
 build:

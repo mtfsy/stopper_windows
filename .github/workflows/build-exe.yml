@@ -1,0 +1,52 @@
+name: Build and Package EXE
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          # If you have a requirements.txt, uncomment the line below:
+          # pip install -r requirements.txt
+
+      - name: Build EXE with PyInstaller
+        run: |
+          pyinstaller --noconsole --onefile --name "Stopper" stopper.py
+
+      - name: Prepare Package Folder
+        run: |
+          # Create a clean folder for the final zip
+          mkdir Package
+          # Copy the EXE from the dist folder
+          copy dist\MyStopper.exe Package\
+          copy configs\program_name.txt Package\
+          # Copy the rest of the repo (excluding build artifacts and .git)
+          #xcopy . Package /E /X /Y /Exclude:exclude-list.txt
+        shell: cmd
+
+      - name: Create Zip Archive
+        shell: pwsh
+        run: |
+          Compress-Archive -Path Package\* -DestinationPath Stopper_Bundle.zip
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Stopper-Full-Package
+          path: Stopper_Bundle.zip
